@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon -L /bin/www"
+    "start": "nodemon --ignore './bin/' -L bin/www"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
@@ -12,6 +12,8 @@
     "http-errors": "~1.6.2",
     "morgan": "~1.9.0",
     "pug": "2.0.0-beta11",
+    "request": "^2.88.0",
+    "sentiment": "^5.0.1",
     "twit": "^2.2.11"
   },
   "devDependencies": {
