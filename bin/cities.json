@@ -1,11 +1,1 @@
-{
-  "brisbane": {
-    "mood": 0.45186823723780245,
-    "coords": [
-      152.9063,
-      -27.7508,
-      153.3152,
-      -27.19
-    ]
-  }
-}
+{"Brisbane":{"name":"Brisbane","country":"AU","playlistID":"5BOqzsz51idDiSonAMiakK","playlistLink":"https://open.spotify.com/playlist/5BOqzsz51idDiSonAMiakK","mood":0.5,"coords":[152.9063,-27.7508,153.3152,-27.19]}}
