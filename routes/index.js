@@ -17,9 +17,30 @@ const count = 100;
 const userID = 'jvmp2s1p901haxewtxy87iz23';
 const accessEncode = new Buffer(spotifyKeys.clientID + ':' + spotifyKeys.clientSecret).toString('base64');
 
-const addNewCity = function(name) {
-  refreshSpotifyToken();
+const refreshSpotifyToken = async function() {
+  const authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    headers: {
+      'Authorization': 'Basic ' + accessEncode
+    },
+    form: {
+      grant_type: 'refresh_token',
+      refresh_token: spotifyKeys.refreshToken
+    },
+    json: true
+  };
 
+  request.post(authOptions, function(error, response, body) {
+    if (!error) {
+      spotifyKeys.accessToken = body.access_token;
+      fs.writeFile(`./.secrets/spotify.json`, JSON.stringify(spotifyKeys), 'utf-8');
+    }
+  });
+
+  await new Promise((resolve) => setTimeout(() => resolve(), 1000));
+}
+
+const addNewCity = function(name) {
   const options = {
     url: `https://api.spotify.com/v1/users/${userID}/playlists`,
     body: JSON.stringify({
@@ -46,47 +67,28 @@ const addNewCity = function(name) {
   });
 }
 
-const refreshSpotifyToken = function() {
-  const authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
-    headers: {
-      'Authorization': 'Basic ' + accessEncode
-    },
-    form: {
-      grant_type: 'refresh_token',
-      refresh_token: spotifyKeys.refreshToken
-    },
-    json: true
-  };
-
-  request.post(authOptions, function(error, response, body) {
-    if (!error) {
-      spotifyKeys.accessToken = body.access_token;
-      fs.writeFile(`./.secrets/spotify.json`, JSON.stringify(spotifyKeys), 'utf-8');
-    }
-  });
-}
-
-const addSpotifyTrack = function(valence) {
+const addSpotifyTrack = async function (semantic) {
+  await refreshSpotifyToken();
   const country = 'AU';
 
   const options = {
     url: 'https://api.spotify.com/v1/recommendations?' +
       querystring.stringify({
-        limit: 5,
+        limit: 3,
         market: country,
-        target_valence: valence,
-        seed_artists: '2yZxOCzq3fkvlApnYFOd8H,4tKUoNubW02udXOh7SLtXV,4YrKBkKSVeqDamzBPWVnSJ,0oSGxfWSnnOXhD2fKuz2Gy,7jy3rLJdDQY21OgRLCZ9sD'
+        target_valence: semantic,
+        target_energy: semantic,
+        seed_artists: '2yZxOCzq3fkvlApnYFOd8H,4tKUoNubW02udXOh7SLtXV,4YrKBkKSVeqDamzBPWVnSJ,0oSGxfWSnnOXhD2fKuz2Gy,7jy3rLJdDQY21OgRLCZ9sD' // Randomise seeds, add artists?
       }),
     headers: { 'Authorization': 'Bearer ' + spotifyKeys.accessToken },
     json: true
   };
 
-  console.log(options);
-
   request.get(options, function(error, response, body) {
         if(!error) {
-          console.log(body);
+          body.tracks.forEach(function(song) {
+            console.log(song.artists[0].name + ": " + song.name);
+          });
         } else {
           console.log(error);
         }
@@ -107,13 +109,14 @@ const getCityMood = function(city) {
     mood = (mood + 5) / 10;
     cities[city].mood = mood;
     fs.writeFile('./bin/cities.json', JSON.stringify(cities, null, 2), 'utf-8');
-    console.log(cities[city].mood);
+
+    addSpotifyTrack(mood);
   });
 }
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  request.post('https://api.spotify.com/v1/me?')
+  res.end('Sup');
   //res.render('index', { title: cities.brisbane.mood  });
 });
 
@@ -159,9 +162,9 @@ router.get('/callback', function(req, res, next) {
 });
 */
 
-
+addSpotifyTrack(0.5);
 //getCityMood('brisbane');
-setInterval(refreshSpotifyToken, 360000);
+setInterval(refreshSpotifyToken, 300000);
 //setTimeout(addSpotifyTrack, 5000, 0);
 //addNewCity('Brisbane');
 
