@@ -1,117 +1,17 @@
-const fs = require('fs');
-const request = require('request');
-const querystring = require('querystring');
 const express = require('express');
+const Twitter = require('./twitter');
+const Spotify = require('./spotify');
+
 const router = express.Router();
-const twit = require('twit');
-const senti = require('sentiment');
 
-const twitterKeys = require('../.secrets/twitter');
-const spotifyKeys = require('../.secrets/spotify');
-const cities = require('../bin/cities');
-
-const Twitter = new twit(twitterKeys);
-const Sentiment = new senti();
-
-const count = 100;
-const userID = 'jvmp2s1p901haxewtxy87iz23';
-const accessEncode = new Buffer(spotifyKeys.clientID + ':' + spotifyKeys.clientSecret).toString('base64');
-
-const refreshSpotifyToken = async function() {
-  const authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
-    headers: {
-      'Authorization': 'Basic ' + accessEncode
-    },
-    form: {
-      grant_type: 'refresh_token',
-      refresh_token: spotifyKeys.refreshToken
-    },
-    json: true
-  };
-
-  request.post(authOptions, function(error, response, body) {
-    if (!error) {
-      spotifyKeys.accessToken = body.access_token;
-      fs.writeFile(`./.secrets/spotify.json`, JSON.stringify(spotifyKeys), 'utf-8');
-    }
-  });
-
-  await new Promise((resolve) => setTimeout(() => resolve(), 1000));
-}
-
-const addNewCity = function(name) {
-  const options = {
-    url: `https://api.spotify.com/v1/users/${userID}/playlists`,
-    body: JSON.stringify({
-      name: 'City Vibes - ' + name,
-      description: 'The city vibes playlist for ' + name + '. Listen along to the cities mood and see the current status at https://twitter.com/BearfootDev?lang=en.'
-    }),
-    headers: {
-      'Authorization': 'Bearer ' + spotifyKeys.accessToken,
-      'Content-Type': 'application/json'
-    }
-  };
-
-  request.post(options, function(error, response, body) {
-    cities[name] = {
-      "name": name,
-      "country": 'AU',
-      "playlistID": JSON.parse(response.body).id,
-      "playlistLink": JSON.parse(response.body).external_urls.spotify,
-      "mood": 0.5,
-      "coords": [152.9063, -27.7508, 153.3152, -27.19]
-    };
-
-    fs.writeFile('./bin/cities.json', JSON.stringify(cities), 'utf-8');
-  });
-}
-
-const addSpotifyTrack = async function (semantic) {
-  await refreshSpotifyToken();
-  const country = 'AU';
-
-  const options = {
-    url: 'https://api.spotify.com/v1/recommendations?' +
-      querystring.stringify({
-        limit: 3,
-        market: country,
-        target_valence: semantic,
-        target_energy: semantic,
-        seed_artists: '2yZxOCzq3fkvlApnYFOd8H,4tKUoNubW02udXOh7SLtXV,4YrKBkKSVeqDamzBPWVnSJ,0oSGxfWSnnOXhD2fKuz2Gy,7jy3rLJdDQY21OgRLCZ9sD' // Randomise seeds, add artists?
-      }),
-    headers: { 'Authorization': 'Bearer ' + spotifyKeys.accessToken },
-    json: true
-  };
-
-  request.get(options, function(error, response, body) {
-        if(!error) {
-          body.tracks.forEach(function(song) {
-            console.log(song.artists[0].name + ": " + song.name);
-          });
-        } else {
-          console.log(error);
-        }
-  });
-}
-
-const getCityMood = function(city) {
-  let mood = 0;
-  Twitter.get('search/tweets', { q: 'Mood', result_type: 'recent', locations: cities[city].coords, lang: 'en', count: count }, function(error, tweets, response) {
-    let tweetScores = [];
-    for (let i = 0; i < count; i++) {
-      let score = Sentiment.analyze(tweets.statuses[i].text).comparative;
-      mood += score;
-      tweetScores.push({ score: score , text: tweets.statuses[i].text });
-    }
-    tweetScores.sort((a, b) => b.score - a.score); // Get High/Low 3
-
-    mood = (mood + 5) / 10;
-    cities[city].mood = mood;
-    fs.writeFile('./bin/cities.json', JSON.stringify(cities, null, 2), 'utf-8');
-
-    addSpotifyTrack(mood);
-  });
+const main = async function() {
+  //const mood = await Twitter.getCityMood('Brisbane');
+  //const runtime = await Spotify.addTrack(mood);
+  //setTimeout(main, runtime - 30000);
+  //setInterval(refreshSpotifyToken, 300000);
+  //setTimeout(addSpotifyTrack, 5000, 0);
+  //addNewCity('Brisbane');
+  Spotify.checkForDuplicate('Brisbane', '5UWwZ5lm5PKu6eKsHAGxOk');
 }
 
 /* GET home page. */
@@ -120,6 +20,7 @@ router.get('/', function(req, res, next) {
   //res.render('index', { title: cities.brisbane.mood  });
 });
 
+main();
 /*
 router.get('/login', function(req, res, next) {
   res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${spotifyKeys.clientID}&scope=playlist-modify-public playlist-read-private playlist-modify-private&redirect_uri=http://bearfoot.design/callback`);
@@ -161,11 +62,5 @@ router.get('/callback', function(req, res, next) {
   });
 });
 */
-
-addSpotifyTrack(0.5);
-//getCityMood('brisbane');
-setInterval(refreshSpotifyToken, 300000);
-//setTimeout(addSpotifyTrack, 5000, 0);
-//addNewCity('Brisbane');
 
 module.exports = router;
