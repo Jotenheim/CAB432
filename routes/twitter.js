@@ -31,7 +31,7 @@ const Twitter = {
         return mood;
       })
     .catch((error) => {
-        console.log(error);
+        console.log(error.message);
       });
   }
 }

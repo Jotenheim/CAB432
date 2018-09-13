@@ -32,42 +32,10 @@ const Spotify = {
         });
       })
       .catch((error) => {
-
+        console.log(error);
       });
 
     await new Promise((resolve) => setTimeout(() => resolve(), 1000));
-  },
-
-  checkForDuplicate: async function(city, songID) {
-    let offset = 0;
-    let scanning = true;
-    const playlistID = cities[city].playlistID;
-    await this.refreshSpotifyToken();
-
-    while (scanning) {
-      const options = {
-        url: `https://api.spotify.com/v1/playlists/${playlistID}/tracks?` +
-          querystring.stringify({
-            fields: 'total,items(track(id))',
-            offset: offset
-          }),
-        headers: { 'Authorization': 'Bearer ' + spotifyKeys.accessToken },
-        json: true
-      }
-
-      await request.get(options)
-        .then((data) => {
-          data.items.forEach(function(track) {
-            if(track.track.id === songID) {
-              scanning = false;
-              console.log(track.track.id);
-            }
-          });
-        })
-        .catch((error) => {
-
-        });
-    }
   },
 
   addNewCity: async function(name) {
@@ -102,16 +70,61 @@ const Spotify = {
       });
   },
 
-  addTrack: async function (city, semantic) {
+  addTrackToPlaylist: async function(city, songID) {
+    const options = {
+      url: `https://api.spotify.com/v1/playlists/${cities[city].playlistID}/tracks?uris=spotify:track:${songID}`,
+      headers: { 'Authorization': 'Bearer ' + spotifyKeys.accessToken }
+    }
+
+    request.post(options)
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  },
+
+  checkForDuplicate: async function(city, songID) {
+    let offset = 0;
+    let scanning = true;
+    const playlistID = cities[city].playlistID;
+
+    while (scanning) {
+      const options = {
+        url: `https://api.spotify.com/v1/playlists/${playlistID}/tracks?` +
+          querystring.stringify({
+            fields: 'total,items(track(id))',
+            offset: offset
+          }),
+        headers: { 'Authorization': 'Bearer ' + spotifyKeys.accessToken },
+        json: true
+      }
+
+      return await request.get(options)
+        .then((data) => {
+          data.items.forEach((track) => {
+            if(track.track.id === songID) {
+              scanning = false;
+              return 'true';
+            }
+          });
+          return false;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  },
+
+  findNewTrack: async function (city, semantic) {
     await this.refreshSpotifyToken();
-    console.log(semantic);
-    const country = 'AU';
 
     const options = {
       url: 'https://api.spotify.com/v1/recommendations?' +
         querystring.stringify({
-          limit: 3,
-          market: country,
+          limit: 100,
+          market: cities[city].country,
           target_valence: semantic,
           target_energy: semantic,
           seed_artists: '2yZxOCzq3fkvlApnYFOd8H,4tKUoNubW02udXOh7SLtXV,4YrKBkKSVeqDamzBPWVnSJ,0oSGxfWSnnOXhD2fKuz2Gy,7jy3rLJdDQY21OgRLCZ9sD' // Randomise seeds, add artists?
@@ -122,7 +135,7 @@ const Spotify = {
 
     return await request.get(options)
       .then((data) => {
-        return data.tracks[0].duration_ms;
+        return data.tracks[0].id;
       })
       .catch((error) => {
         console.log(error);

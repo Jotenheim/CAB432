@@ -2,16 +2,37 @@ const express = require('express');
 const Twitter = require('./twitter');
 const Spotify = require('./spotify');
 
+const cities = require('../bin/cities');
+
 const router = express.Router();
 
+const updateCities = async function() {
+  for (var city in cities) {
+    const mood = await Twitter.getCityMood(city);
+    let addingSong = true;
+
+    while (addingSong) {
+      const songID = await Spotify.findNewTrack(city, mood);
+      const isDuplicate = await Spotify.checkForDuplicate(city, songID);
+      if(isDuplicate === false) {
+        addingSong = false;
+        Spotify.addTrackToPlaylist(city, songID);
+      }
+    }
+  }
+}
+
 const main = async function() {
-  //const mood = await Twitter.getCityMood('Brisbane');
-  //const runtime = await Spotify.addTrack(mood);
+  //const city = 'Brisbane';
+  //const mood = await Twitter.getCityMood(city);
+  //const runtime = await Spotify.findNewTrack(city, mood);
   //setTimeout(main, runtime - 30000);
   //setInterval(refreshSpotifyToken, 300000);
   //setTimeout(addSpotifyTrack, 5000, 0);
   //addNewCity('Brisbane');
-  Spotify.checkForDuplicate('Brisbane', '5UWwZ5lm5PKu6eKsHAGxOk');
+  //Spotify.checkForDuplicate(city, '5UWwZ5lm5PKu6eKsHAGxOk');
+
+  updateCities();
 }
 
 /* GET home page. */
