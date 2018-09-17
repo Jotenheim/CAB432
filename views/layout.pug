@@ -1,7 +1,27 @@
 doctype html
 html
   head
-    title= title
+    title City Vibes
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.6/semantic.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
+    .ui.borderless.fixed.main.menu
+      .ui.container
+        a.header.item(href='/')
+          img.logo(src='/images/logo.png')
+          |&nbsp;&nbsp;&nbsp;City Vibes
+        .item.right
+        if active === 'index'
+          a.item.active(href='/') Home
+        else
+          a.item(href='/') Home
+        if active === 'cities'
+          a.item.active(href='/cities') Cities
+        else
+          a.item(href='/cities') Cities
+        if active === 'artists'
+          a.item.active(href='/artists') Artists
+        else
+          a.item(href='/artists') Artists
+
     block content

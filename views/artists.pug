@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  .ui.text.container
+    .ui.basic.center.aligned.segment
+      h1.ui.inverted.header Artists
+      h2.ui.inverted.header Here are some of the artists featured in our playlists, feel free to add more!
+    .ui.basic.center.aligned.segment
+      form(method='POST' action='/artists')
+        div.form-group
+          .ui.action.input.fluid
+            input#artistName(type='text', placeholder='Artist Name...', name='artistName')
+            button.ui.button(type='submit') Add &nbsp;
+              i.add.icon
+    .ui.basic.center.aligned.segment
+      .ui.equal.width.stackable.internally.grid
+        .center.aligned.row
+          .column
+            ul.artists
+              each seed in seeds1
+                li
+                  img.image.avatar.ui(src=seed.image)
+                  span.ui.inverted.header
+                    = seed.name
+          .column
+            ul.artists
+              each seed in seeds2
+                li
+                  img.image.avatar.ui(src=seed.image)
+                  span.ui.inverted.header
+                    = seed.name

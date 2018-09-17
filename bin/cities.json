@@ -2,14 +2,25 @@
   "Brisbane": {
     "name": "Brisbane",
     "country": "AU",
-    "playlistID": "5BOqzsz51idDiSonAMiakK",
-    "playlistLink": "https://open.spotify.com/playlist/5BOqzsz51idDiSonAMiakK",
-    "mood": 0.5666666666666667,
-    "coords": [
-      152.9063,
-      -27.7508,
-      153.3152,
-      -27.19
-    ]
+    "playlistID": "1SPhY7XlS42r1dUZOq6PCc",
+    "playlistLink": "https://open.spotify.com/playlist/1SPhY7XlS42r1dUZOq6PCc",
+    "mood": 0.5420038733196628,
+    "coords": "-27.46841,153.02335,20km"
+  },
+  "Melbourne": {
+    "name": "Melbourne",
+    "country": "AU",
+    "playlistID": "5tVczWiGbL22tIcdPIy8Mz",
+    "playlistLink": "https://open.spotify.com/playlist/5tVczWiGbL22tIcdPIy8Mz",
+    "mood": 0.5566433747412007,
+    "coords": "-37.81747,144.96713,20km"
+  },
+  "New York": {
+    "name": "New York",
+    "country": "AU",
+    "playlistID": "0jYA8UEXcBNHrUv8QPOy1T",
+    "playlistLink": "https://open.spotify.com/playlist/0jYA8UEXcBNHrUv8QPOy1T",
+    "mood": 0.5433035714285714,
+    "coords": "40.71455,-74.00714,20km"
   }
 }

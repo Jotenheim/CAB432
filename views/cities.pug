@@ -1,0 +1,34 @@
+extends layout
+
+block content
+  .ui.text.container
+    .ui.basic.center.aligned.segment
+      h1.ui.inverted.header Cities
+      h2.ui.inverted.header Add yours to the list here!
+    .ui.basic.center.aligned.segment
+      form(method='POST' action='/cities')
+        div.form-group
+          .ui.action.input.fluid
+            input#cityName(type='text', placeholder='City Name...', name='cityName')
+            button.ui.button(type='submit') Add &nbsp;
+              i.add.icon
+    .ui.basic.center.aligned.segment
+      ul.cities
+        each city in cities
+          li
+            span.ui.inverted.header
+              = city.name + ' - '
+              a(href=city.playlistLink) Spotify
+              |&nbsp;-&nbsp;Current mood is:&nbsp;
+              if city.mood > .8
+                |On top of the world!
+              else if city.mood > .65
+                |Pretty good."
+              else if city.mood > .5
+                |Meh.
+              else if city.mood > .35
+                |Bad...
+              else if city.mood > .2
+                |Awful...
+              else
+                |The absolute worst!

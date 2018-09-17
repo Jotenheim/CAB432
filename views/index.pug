@@ -1,5 +1,28 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .ui.text.container
+    .ui.basic.center.aligned.segment.masthead
+      h1.ui.inverted.header City Vibes
+      h2.ui.inverted.header Listen to the rhythm of the city.
+    .ui.vertical.stripe.quote.segment
+      .ui.equal.width.stackable.internally.celled.grid
+        .center.aligned.row
+          .column
+            each city in cities
+              li
+                a(href=city.playlistLink)
+                  span.ui.inverted.header
+                  = city.name
+          .column
+            .ui.equal.width.stackable.internally.grid
+              .center.aligned.row
+                .column
+                  a(href='https://developer.spotify.com')
+                    img.image.tiny.ui(src='/images/spotify-icon.png')
+                .column
+                  a(href='https://developer.twitter.com/')
+                    img.image.tiny.ui(src='/images/twitter-icon.png')
+                .column
+                  a(href='https://developer.here.com')
+                    img.image.tiny.ui(src='/images/here-icon.png')
