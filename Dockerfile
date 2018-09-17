@@ -1,7 +1,10 @@
 FROM node:8
 
-RUN npm install nodemon -g
-
+COPY . /src
 WORKDIR /src
-ADD package.json .
+
 RUN npm install
+
+EXPOSE 3000
+
+CMD [ "npm", "start" ]
