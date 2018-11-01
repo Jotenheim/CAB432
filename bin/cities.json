@@ -12,7 +12,7 @@
     "country": "AU",
     "playlistID": "5tVczWiGbL22tIcdPIy8Mz",
     "playlistLink": "https://open.spotify.com/playlist/5tVczWiGbL22tIcdPIy8Mz",
-    "mood": 0.5547494353472614,
+    "mood": 0.5022323546019198,
     "coords": "-37.81747,144.96713,20km"
   },
   "New York": {
@@ -20,7 +20,15 @@
     "country": "AU",
     "playlistID": "0jYA8UEXcBNHrUv8QPOy1T",
     "playlistLink": "https://open.spotify.com/playlist/0jYA8UEXcBNHrUv8QPOy1T",
-    "mood": 0.530974025974026,
+    "mood": 0.5375661375661376,
     "coords": "40.71455,-74.00714,20km"
+  },
+  "Perth": {
+    "name": "Perth",
+    "country": "AU",
+    "playlistID": "3bihJ5QoExu6hkoWKSMVec",
+    "playlistLink": "https://open.spotify.com/playlist/3bihJ5QoExu6hkoWKSMVec",
+    "mood": 0.5,
+    "coords": "-31.95264,115.85742,20km"
   }
 }
